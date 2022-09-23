@@ -1,8 +1,11 @@
+if(self.Captors) {
+    self.Captors.destroy();
+}
 window.Captors = (function(self) {
     let rootEl;
     let dialogEl;
     let logs;
-    let startTime;
+    let endTime;
     
     const fieldNameMap = {
         request: "request_per_second_on_ELB",
@@ -20,10 +23,6 @@ window.Captors = (function(self) {
     }
 
     const init = (root) => {
-        if(self.Captors) {
-            self.Captors.destroy();
-        }
-
         if(root instanceof HTMLElement === false) {
             console.log("Invalid root. Pls check if you are running the script in Edit mode");
             return;
@@ -38,7 +37,7 @@ window.Captors = (function(self) {
     }
 
     const run = (time) => {
-        startTime = time;
+        endTime = time;
         showDialog();
     }
 
@@ -59,7 +58,7 @@ window.Captors = (function(self) {
     }
 
     const removeDialog = () => {
-        dialogEl.remove();
+        if(dialogEl) dialogEl.remove();
     }
 
     const createDialogEl = () => {
@@ -109,16 +108,15 @@ window.Captors = (function(self) {
     }
 
     const populateData = (logs) => {
-        const startData = logs.find(item => item.startTime.includes(startTime));
+        const startData = logs.find(item => item.endTime?.includes(endTime));
         if(!startData) {
-            console.warn("Invalid startTime");
+            console.warn("Invalid endTime");
         }
         const startIndex = logs.indexOf(startData);
 
-        console.log(logs);
-        for(let i = startIndex; i < logs.length; i += 2) {
+        for(let i = startIndex; i < logs.length; i++) {
             const data = logs[i];
-            const [hr, min] = data.startTime.split(" ")[4].split(":");
+            const [hr, min] = data.endTime.split(" ")[4].split(":");
             const time = [hr, min].join(":");
             const cellEls = grabRowCellEls(time);
             writeData(cellEls, data)
@@ -132,10 +130,19 @@ window.Captors = (function(self) {
         }
         console.log("Time: ", time);
 
-        const rowEl = Array.from(rootEl.querySelectorAll("td"))
+        let rowEl;
+        try {
+            rowEl = Array.from(rootEl.querySelectorAll("td"))
             .find(el => el.textContent === time)
             .parentElement;
+        }catch(e) {
+            console.log("Invalid rowEl");
+        }
         
+        if(!rowEl) {
+            return;
+        }
+
         const cellEls = {};
 
         const requestCellEls = rowEl.children[1].querySelectorAll("td");
@@ -219,6 +226,10 @@ window.Captors = (function(self) {
     }
 
     const writeData = (cellEls, data) => {
+        if(!cellEls) {
+            return;
+        }
+
         const traffic = data.trafic;
         const health = data.health;
 
