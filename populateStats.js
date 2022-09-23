@@ -1,4 +1,4 @@
-const Captors = (function(self) {
+window.Captors = (function(self) {
     let rootEl;
     let dialogEl;
     let logs;
@@ -24,7 +24,7 @@ const Captors = (function(self) {
             self.App.destroy();
         }
 
-        if(typeof root !== HTMLElement) {
+        if(root instanceof HTMLElement === false) {
             console.log("Invalid root. Pls check if you are running the script in Edit mode");
             return;
         }
