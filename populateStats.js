@@ -20,8 +20,8 @@ window.Captors = (function(self) {
     }
 
     const init = (root) => {
-        if(self.App) {
-            self.App.destroy();
+        if(self.Captors) {
+            self.Captors.destroy();
         }
 
         if(root instanceof HTMLElement === false) {
@@ -34,7 +34,7 @@ window.Captors = (function(self) {
 
     const destroy = () => {
         removeDialog();
-        delete self.App;
+        delete self.Captors;
     }
 
     const run = (time) => {
