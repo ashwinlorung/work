@@ -23,6 +23,12 @@ const Captors = (function(self) {
         if(self.App) {
             self.App.destroy();
         }
+
+        if(typeof root !== HTMLElement) {
+            console.log("Invalid root. Pls check if you are running the script in Edit mode");
+            return;
+        }
+
         rootEl = root;
     }
 
@@ -246,3 +252,4 @@ const Captors = (function(self) {
 }(window));
 
 Captors.init(document.getElementById("tinymce"));
+
